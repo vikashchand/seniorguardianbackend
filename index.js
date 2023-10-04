@@ -127,49 +127,53 @@ async function sendNotifications() {
 
     console.log('Found tasks:', tasks);
 
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      port: 465,
-      secure: true,
-      auth: {
-        user: SMTP_MAIL, // Replace with your Gmail username
-        pass: SMTP_PASSWORD, // Replace with your Gmail password
-      },
-      tls: {
-        rejectUnauthorized: false,
-      },
-    });
+    // Check if there are tasks found
+    if (tasks.length > 0) {
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        port: 465,
+        secure: true,
+        auth: {
+          user: SMTP_MAIL, // Replace with your Gmail username
+          pass: SMTP_PASSWORD, // Replace with your Gmail password
+        },
+        tls: {
+          rejectUnauthorized: false,
+        },
+      });
 
-    // Prepare the email content with the list of upcoming tasks
-    let emailContent = 'Upcoming Tasks:\n\n';
+      // Prepare the email content with the list of upcoming tasks
+      let emailContent = 'Upcoming Tasks:\n\n';
 
-    // Iterate through the fetched tasks and add their names to the email content
-    for (const task of tasks) {
-      emailContent += `- Task "${task.name}" scheduled at ${moment(task.time, 'HH:mm').format('LT')}\n`;
-    }
-
-    console.log('Email content:', emailContent); // Log the email content
-
-    const mailOptions = {
-      from: SMTP_MAIL, // Replace with your Gmail username
-      to: "vikashchand147@gmail.com",
-      subject: 'Upcoming Task Reminders',
-      text: emailContent,
-    };
-
-    // Send the email
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.error('Error sending email:', error);
-      } else {
-        console.log('Email sent:', info.response);
+      // Iterate through the fetched tasks and add their names to the email content
+      for (const task of tasks) {
+        emailContent += `- Task "${task.name}" scheduled at ${moment(task.time, 'HH:mm').format('LT')}\n`;
       }
-    });
+
+      console.log('Email content:', emailContent); // Log the email content
+
+      const mailOptions = {
+        from: SMTP_MAIL, // Replace with your Gmail username
+        to: "vikashchand147@gmail.com",
+        subject: 'Upcoming Task Reminders',
+        text: emailContent,
+      };
+
+      // Send the email
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.error('Error sending email:', error);
+        } else {
+          console.log('Email sent:', info.response);
+        }
+      });
+    } else {
+      console.log('No upcoming tasks found. Email not sent.');
+    }
   } catch (error) {
     console.error('Error sending notifications:', error);
   }
 }
-
 
 
 // Schedule the sendNotifications function to run every minute
