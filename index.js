@@ -104,6 +104,8 @@ app.get('/api/activities', async (req, res) => {
 });
 
 // Function to send notifications for tasks scheduled within the next hour
+// Function to send notifications for tasks scheduled within the next hour
+// Function to send notifications for tasks scheduled within the next hour
 async function sendNotifications() {
   console.log('Sending notifications for tasks scheduled within the next hour');
   try {
@@ -111,13 +113,19 @@ async function sendNotifications() {
     const currentTime = moment();
     const oneHourFromNow = moment().add(1, 'hour');
 
+    console.log('Current time:', currentTime.format('YYYY-MM-DD HH:mm'));
+    console.log('One hour from now:', oneHourFromNow.format('YYYY-MM-DD HH:mm'));
+
     // Find tasks that are scheduled within the next hour
     const tasks = await Activity.find({
+      // Convert time strings to moment objects for comparison
       time: {
-        $gte: currentTime.toDate(),
-        $lt: oneHourFromNow.toDate(),
+        $gte: currentTime.format('HH:mm'), // Convert current time to "HH:mm"
+        $lt: oneHourFromNow.format('HH:mm'), // Convert one hour from now to "HH:mm"
       },
     });
+
+    console.log('Found tasks:', tasks);
 
     const transporter = nodemailer.createTransport({
       service: 'gmail',
@@ -132,14 +140,15 @@ async function sendNotifications() {
       },
     });
 
-    const recipientEmail = 'recipient-email@example.com'; // Replace with recipient email
-
     // Prepare the email content with the list of upcoming tasks
     let emailContent = 'Upcoming Tasks:\n\n';
 
-    tasks.forEach((task) => {
+    // Iterate through the fetched tasks and add their names to the email content
+    for (const task of tasks) {
       emailContent += `- Task "${task.name}" scheduled at ${moment(task.time, 'HH:mm').format('LT')}\n`;
-    });
+    }
+
+    console.log('Email content:', emailContent); // Log the email content
 
     const mailOptions = {
       from: SMTP_MAIL, // Replace with your Gmail username
@@ -160,6 +169,8 @@ async function sendNotifications() {
     console.error('Error sending notifications:', error);
   }
 }
+
+
 
 // Schedule the sendNotifications function to run every minute
 cron.schedule('* * * * *', sendNotifications);
