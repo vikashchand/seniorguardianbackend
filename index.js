@@ -11,6 +11,13 @@ const SMTP_MAIL = process.env.SMTP_MAIL;
 const SMTP_PASSWORD = process.env.SMTP_PASSWORD;
 const app = express();
 
+const twilio = require('twilio');
+const accountSid = process.env.accountSid;
+const authToken = process.env.authToken;
+const clientno =process.env.ck;
+const phoneno =process.env.pk;
+const client = require('twilio')(accountSid, authToken);
+
 // MongoDB Configuration
 const Activity = require('./models/Activity');
 
@@ -191,8 +198,7 @@ process.on('unhandledRejection', (reason, promise) => {
 
 
 
-app.post('/api/submitForm', (req, res) => {
-
+app.post('/api/submitForm', async (req, res) => {
   const currentTime = moment();
   const { name, phone, description, email, dateTime, selection } = req.body;
 
@@ -201,23 +207,30 @@ app.post('/api/submitForm', (req, res) => {
     phone,
     description,
     email,
-    dateTime:currentTime,
+    dateTime: currentTime,
     selection,
   });
 
-  services.save()
-  .then(() => {
+  try {
+    await services.save();
+
+    // Send a WhatsApp message
+    const currentTime = moment();
+    const message = await client.messages.create({
+     
+      body: `New form submission:\nName: ${name}\nPhone: ${phone}\nDescription: ${description}\nEmail: ${email}\nDate & Time: ${currentTime}\nServiceCategory: ${selection}`,
+      from: clientno, // Replace with your Twilio phone number
+      to: phoneno // Replace with the recipient's WhatsApp phone number
+    });
+
+    console.log(`WhatsApp message sent with SID: ${message.sid}`);
+
     res.status(200).json({ message: 'Data saved successfully.' });
-  })
-  .catch((err) => {
+  } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'An error occurred while saving the data.' });
-  });
-
-
-  
+    res.status(500).json({ error: 'An error occurred while saving the data or sending the WhatsApp message.' });
+  }
 });
-
 
 
 
