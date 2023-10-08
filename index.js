@@ -14,6 +14,8 @@ const app = express();
 // MongoDB Configuration
 const Activity = require('./models/Activity');
 
+const Services =require('./models/Services');
+
 // CORS Configuration
 const corsOptions = {
   origin: 'http://localhost:3000',
@@ -186,6 +188,38 @@ process.on('unhandledRejection', (reason, promise) => {
 });
 
 // Define your routes and other middleware here as needed
+
+
+
+app.post('/api/submitForm', (req, res) => {
+
+  const currentTime = moment();
+  const { name, phone, description, email, dateTime, selection } = req.body;
+
+  const services = new Services({
+    name,
+    phone,
+    description,
+    email,
+    dateTime:currentTime,
+    selection,
+  });
+
+  services.save()
+  .then(() => {
+    res.status(200).json({ message: 'Data saved successfully.' });
+  })
+  .catch((err) => {
+    console.error(err);
+    res.status(500).json({ error: 'An error occurred while saving the data.' });
+  });
+
+
+  
+});
+
+
+
 
 const PORT = process.env.PORT;
 
