@@ -10,7 +10,7 @@
    "crons": [
      {
        "path": "/hello.js", 
-       "schedule": "0 0 * * *" 
+       "schedule": "* * * * *" 
      }
    ]
  }
