@@ -25,7 +25,7 @@ const Services =require('./models/Services');
 
 // CORS Configuration
 const corsOptions = {
-  origin: 'http://localhost:3000',
+  origin: 'https://senior-guardian.vercel.app',
   credentials: true,
   optionSuccessStatus: 200,
 };
