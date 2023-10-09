@@ -6,5 +6,13 @@
     ],
     "routes": [
        { "src": "/(.*)", "dest": "/index.js" }
+    ],
+
+    "crons":[
+      {
+         "path":"hello.js",
+         "schedule":"0 0 * * *"
+      }
+
     ]
  }
