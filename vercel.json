@@ -1,18 +1,17 @@
 {
-    "version": 2,
-    "name": "Oldcare connect",
-    "builds": [
-       { "src": "index.js", "use": "@vercel/node" }
-    ],
-    "routes": [
-       { "src": "/(.*)", "dest": "/index.js" }
-    ],
-
-    "crons":[
-      {
-         "path":"hello.js",
-         "schedule":"0 0 * * *"
-      }
-
-    ]
+   "version": 2,
+   "name": "Oldcare connect",
+   "builds": [
+     { "src": "index.js", "use": "@vercel/node" }
+   ],
+   "routes": [
+     { "src": "/(.*)", "dest": "/index.js" }
+   ],
+   "crons": [
+     {
+       "path": "/hello.js", 
+       "schedule": "0 0 * * *" 
+     }
+   ]
  }
+ 
